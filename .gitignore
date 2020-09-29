@@ -102,3 +102,19 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Google API Auth files
+credentials.json
+token.json
+
+# Config
+config.json
+
+# ESLint
+.eslintrc.json
+
+# Images
+*.png
+
+# Mac
+.DS_Store
