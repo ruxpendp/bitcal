@@ -33,7 +33,7 @@ const getAgenda = async () => {
         refresh: true
       }
     ]
-  })
+  });
 
   bitbar(output);
 };
