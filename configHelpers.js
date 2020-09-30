@@ -1,7 +1,6 @@
 const { promises: { writeFile } } = require('fs');
-const { google } = require('googleapis');
 
-const { getAuth } = require('./auth');
+const { getCalendars } = require('./calendarApis');
 const config = require('./config');
 const { calendars: configCalendars } = config;
 
@@ -24,8 +23,7 @@ const toggleCalendar = async () => {
 };
 
 const refreshCalendars = async () => {
-  const gcal = google.calendar({ version: 'v3', auth: await getAuth() });
-  const fetchedCalendars = (await gcal.calendarList.list()).data.items;
+  const fetchedCalendars = await getCalendars();
   const currentCalendars = configCalendars.reduce(
     (calendars, calendar) => ({ ...calendars, [calendar.id]: calendar }),
     {}
@@ -35,6 +33,8 @@ const refreshCalendars = async () => {
       if (a.primary) return -1;
       if (b.primary) return 1;
       if (a.summary.toLowerCase() < b.summary.toLowerCase()) return -1;
+      if (b.summary.toLowerCase() < a.summary.toLowerCase()) return 1;
+      if (a.id < b.id) return -1;
       return 1;
     })
     .map(({ id, summary, primary }) => ({
