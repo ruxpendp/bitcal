@@ -2,11 +2,7 @@ const { promises: { readFile, writeFile } } = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/calendar.readonly'
-  // 'https://www.googleapis.com/auth/calendar.readonly',
-  // 'https://www.googleapis.com/auth/calendar.events.readonly'
-];
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const CREDENTIALS_PATH = `${__dirname}/credentials.json`;
 const TOKEN_PATH = `${__dirname}/token.json`;
 
