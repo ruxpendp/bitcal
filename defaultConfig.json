@@ -1,0 +1,99 @@
+{
+  "offsets": {
+    "add1Day": {
+      "func": "add",
+      "args": [1, "day"]
+    },
+    "add2Days": {
+      "func": "add",
+      "args": [2, "days"]
+    },
+    "add1Week": {
+      "func": "add",
+      "args": [1, "week"]
+    },
+    "startOfDay": {
+      "func": "startOf",
+      "args": ["day"]
+    },
+    "startOfWeek": {
+      "func": "startOf",
+      "args": ["week"]
+    }
+  },
+  "timeStamps": {
+    "now": {
+      "base": "now"
+    },
+    "tomorrowStart": {
+      "base": "now",
+      "offsets": [
+        "add1Day",
+        "startOfDay"
+      ]
+    },
+    "now+2dStart": {
+      "base": "now",
+      "offsets": [
+        "add2Days",
+        "startOfDay"
+      ]
+    },
+    "nextWeekStart": {
+      "base": "now",
+      "offsets": [
+        "add1Week",
+        "startOfWeek"
+      ]
+    }
+  },
+  "eventBuckets": {
+    "ongoing": {
+      "displayName": "Ongoing",
+      "from": "now",
+      "to": "now"
+    },
+    "today": {
+      "displayName": "Today",
+      "from": "now",
+      "to": "tomorrowStart"
+    },
+    "tomorrow": {
+      "displayName": "Tomorrow",
+      "from": "tomorrowStart",
+      "to": "now+2dStart"
+    },
+    "thisWeek": {
+      "displayName": "This Week",
+      "from": "now",
+      "to": "nextWeekStart"
+    }
+  },
+  "presets": [
+    {
+      "displayName": "Today + Tomorrow",
+      "eventBuckets": {
+        "buckets": [
+          "ongoing",
+          "now",
+          "tomorrow"
+        ],
+        "sort": true,
+        "exclusive": true
+      }
+    },
+    {
+      "displayName": "This Week",
+      "eventBuckets": {
+        "buckets": [
+          "ongoing",
+          "now",
+          "tomorrow",
+          "thisWeek"
+        ],
+        "sort": true,
+        "exclusive": true
+      }
+    }
+  ]
+}
