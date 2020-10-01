@@ -4,13 +4,11 @@ const { getCalendars } = require('./calendarApis');
 const config = require('./config');
 const { calendars: configCalendars } = config;
 
-const writeConfig = async newConfig => {
-  await writeFile(`${__dirname}/config.json`, JSON.stringify(newConfig, null, 2));
-}
-
-const selectTimeRange = () => {
-
+const writeConfig = newConfig => {
+  writeFile(`${__dirname}/config.json`, JSON.stringify(newConfig, null, 2));
 };
+
+const selectView = () => writeConfig({ ...config, activeView: process.argv[3] });
 
 const toggleCalendar = async () => {
   const newCalendars = configCalendars.map(({ id, displayName, active }) => ({
@@ -18,8 +16,7 @@ const toggleCalendar = async () => {
     displayName,
     active: id === process.argv[3] ? !active : active
   }));
-
-  await writeConfig({ ...config, calendars: newCalendars });
+  writeConfig({ ...config, calendars: newCalendars });
 };
 
 const refreshCalendars = async () => {
@@ -47,9 +44,9 @@ const refreshCalendars = async () => {
     ? newCalendars[0].id
     : null;
 
-  await writeConfig({ ...config, calendars: newCalendars, primaryCalendarId });
+  writeConfig({ ...config, calendars: newCalendars, primaryCalendar: primaryCalendarId });
 };
 
-exports.selectTimeRange = selectTimeRange;
+exports.selectView = selectView;
 exports.toggleCalendar = toggleCalendar;
 exports.refreshCalendars = refreshCalendars;
