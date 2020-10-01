@@ -1,99 +1,102 @@
 {
   "offsets": {
-    "add1Day": {
+    "default_add1Day": {
       "func": "add",
       "args": [1, "day"]
     },
-    "add2Days": {
+    "default_add2Days": {
       "func": "add",
       "args": [2, "days"]
     },
-    "add1Week": {
+    "default_add1Week": {
       "func": "add",
       "args": [1, "week"]
     },
-    "startOfDay": {
+    "default_startOfDay": {
       "func": "startOf",
       "args": ["day"]
     },
-    "startOfWeek": {
+    "default_startOfWeek": {
       "func": "startOf",
       "args": ["week"]
     }
   },
   "timeStamps": {
-    "now": {
+    "default_now": {
       "base": "now"
     },
-    "tomorrowStart": {
+    "default_tomorrowStart": {
       "base": "now",
       "offsets": [
-        "add1Day",
-        "startOfDay"
+        "default_add1Day",
+        "default_startOfDay"
       ]
     },
-    "now+2dStart": {
+    "default_now+2dStart": {
       "base": "now",
       "offsets": [
-        "add2Days",
-        "startOfDay"
+        "default_add2Days",
+        "default_startOfDay"
       ]
     },
-    "nextWeekStart": {
+    "default_nextWeekStart": {
       "base": "now",
       "offsets": [
-        "add1Week",
-        "startOfWeek"
+        "default_add1Week",
+        "default_startOfWeek"
       ]
     }
   },
   "eventBuckets": {
-    "ongoing": {
+    "default_ongoing": {
       "displayName": "Ongoing",
-      "from": "now",
-      "to": "now"
+      "from": "default_now",
+      "to": "default_now"
     },
-    "today": {
+    "default_today": {
       "displayName": "Today",
-      "from": "now",
-      "to": "tomorrowStart"
+      "from": "default_now",
+      "to": "default_tomorrowStart"
     },
-    "tomorrow": {
+    "default_tomorrow": {
       "displayName": "Tomorrow",
-      "from": "tomorrowStart",
-      "to": "now+2dStart"
+      "from": "default_tomorrowStart",
+      "to": "default_now+2dStart"
     },
-    "thisWeek": {
+    "default_thisWeek": {
       "displayName": "This Week",
-      "from": "now",
-      "to": "nextWeekStart"
+      "from": "default_now",
+      "to": "default_nextWeekStart"
     }
   },
-  "presets": [
+  "views": [
     {
+      "id": "default_todayTomorrow",
       "displayName": "Today + Tomorrow",
       "eventBuckets": {
         "buckets": [
-          "ongoing",
-          "now",
-          "tomorrow"
+          "default_ongoing",
+          "default_today",
+          "default_tomorrow"
         ],
         "sort": true,
         "exclusive": true
       }
     },
     {
+      "id": "default_thisWeek",
       "displayName": "This Week",
       "eventBuckets": {
         "buckets": [
-          "ongoing",
-          "now",
-          "tomorrow",
-          "thisWeek"
+          "default_ongoing",
+          "default_today",
+          "default_tomorrow",
+          "default_thisWeek"
         ],
         "sort": true,
         "exclusive": true
       }
     }
-  ]
+  ],
+  "activeView": "default_todayTomorrow"
 }
