@@ -9,15 +9,14 @@ const getCalendars = async () => {
 
 const getEvents = async ({ calendarId, timeMin, timeMax }) => {
   const gcal = google.calendar({ version: 'v3', auth: await getAuth() });
-  return (
-    await gcal.events.list({
-      calendarId,
-      timeMin,
-      timeMax,
-      singleEvents: true,
-      orderBy: 'startTime'
-    })
-  ).data.items;
+  const response = await gcal.events.list({
+    calendarId,
+    timeMin,
+    timeMax,
+    singleEvents: true,
+    orderBy: 'startTime'
+  });
+  return response.data.items;
 };
 
 exports.getCalendars = getCalendars;
