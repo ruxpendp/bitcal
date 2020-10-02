@@ -42,7 +42,7 @@ const authorize = async ({ clientSecret, clientId, redirectUri }) => {
   }
 };
 
-const getCredentials = async path => {
+const parseCredentials = async path => {
   try {
     return JSON.parse(await readFile(path));
   } catch (error) {
@@ -51,19 +51,19 @@ const getCredentials = async path => {
   }
 };
 
-const getAuth = async () => {
+const getAuthClient = async () => {
   const {
     installed: {
       client_secret: clientSecret,
       client_id: clientId,
       redirect_uris: [redirectUri]
     }
-  } = await getCredentials(CREDENTIALS_PATH);
+  } = await parseCredentials(CREDENTIALS_PATH);
   return authorize({ clientSecret, clientId, redirectUri });
 };
 
 if (require.main === module) {
-  getAuth();
+  getAuthClient();
 }
 
-exports.getAuth = getAuth;
+exports.getAuthClient = getAuthClient;

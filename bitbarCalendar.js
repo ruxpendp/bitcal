@@ -1,7 +1,9 @@
 #!/usr/bin/env /usr/local/bin/node
 
+const bitbar = require('bitbar');
+
 const { selectView, toggleCalendar, refreshCalendars } = require('./configHelpers');
-const { getOutput } = require('./output');
+const { renderMenuBar } = require('./menuBar');
 
 process.removeAllListeners('warning');
 
@@ -11,7 +13,11 @@ const optparse = {
   'refresh-calendars': refreshCalendars
 }
 
-// console.log(process.argv);
+const bitbarCalendar = async () => {
+  // console.log(process.argv);
 
-if (process.argv.length > 2) optparse[process.argv[2]]();
-else getOutput();
+  if (process.argv.length > 2) optparse[process.argv[2]]();
+  else bitbar(await renderMenuBar());
+};
+
+bitbarCalendar();
