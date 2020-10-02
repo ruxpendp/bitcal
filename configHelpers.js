@@ -32,7 +32,8 @@ const refreshCalendars = async () => {
       if (a.summary.toLowerCase() < b.summary.toLowerCase()) return -1;
       if (b.summary.toLowerCase() < a.summary.toLowerCase()) return 1;
       if (a.id < b.id) return -1;
-      return 1;
+      if (b.id < a.id) return 1;
+      return 0;
     })
     .map(({ id, summary, primary }) => ({
       id,
