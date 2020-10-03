@@ -80,7 +80,7 @@
           "default_tomorrow"
         ],
         "sort": true,
-        "exclusive": true
+        "multiBucketEvents": false
       }
     },
     {
@@ -94,7 +94,7 @@
           "default_thisWeek"
         ],
         "sort": true,
-        "exclusive": true
+        "multiBucketEvents": false
       }
     }
   ],
