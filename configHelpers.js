@@ -1,4 +1,5 @@
 const { promises: { writeFile } } = require('fs');
+const orderBy = require('lodash.orderby');
 
 const { getCalendars } = require('./calendarApis');
 const config = require('./config');
@@ -25,22 +26,16 @@ const refreshCalendars = async () => {
     (calendars, calendar) => ({ ...calendars, [calendar.id]: calendar }),
     {}
   );
-  const newCalendars = fetchedCalendars
-    .sort((a, b) => {
-      if (a.primary) return -1;
-      if (b.primary) return 1;
-      if (a.summary.toLowerCase() < b.summary.toLowerCase()) return -1;
-      if (b.summary.toLowerCase() < a.summary.toLowerCase()) return 1;
-      if (a.id < b.id) return -1;
-      if (b.id < a.id) return 1;
-      return 0;
-    })
-    .map(({ id, summary, primary }) => ({
+  const newCalendars = orderBy(
+    fetchedCalendars.map(({ id, summary, primary }) => ({
       id,
       displayName: summary,
       active: currentCalendars[id] ? currentCalendars[id].active : false,
       primary
-    }));
+    })),
+    [({ primary }) => Boolean(primary), ({ displayName }) => displayName.toLowerCase(), 'id'],
+    ['desc', 'asc', 'asc']
+  );
   const primaryCalendarId = newCalendars.length && newCalendars[0].primary
     ? newCalendars[0].id
     : null;
