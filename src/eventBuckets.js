@@ -1,7 +1,7 @@
 const moment = require('moment');
 const bitbar = require('bitbar');
 
-const { primaryCalendar } = require('./config');
+const { primaryCalendar } = require('../config');
 
 const populateBuckets = ({ buckets, events, multiBucketEvents }) => {
   events.forEach(event => {

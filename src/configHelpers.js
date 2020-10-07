@@ -2,11 +2,11 @@ const { promises: { writeFile } } = require('fs');
 const orderBy = require('lodash.orderby');
 
 const { getCalendars } = require('./calendarApis');
-const config = require('./config');
+const config = require('../config');
 const { calendars: configCalendars } = config;
 
 const writeConfig = newConfig => {
-  writeFile(`${__dirname}/config.json`, JSON.stringify(newConfig, null, 2));
+  writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
 };
 
 const selectView = () => writeConfig({ ...config, activeView: process.argv[3] });

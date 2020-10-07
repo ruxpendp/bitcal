@@ -1,12 +1,12 @@
 const bitbar = require('bitbar');
 
-const iconActive = require('./iconActive');
-const iconInactive = require('./iconInactive');
+const iconActive = require('../iconActive');
+const iconInactive = require('../iconInactive');
 const { getEvents } = require('./calendarApis');
 const { renderViewsMenu, renderCalendarConfigMenu } = require('./menus');
 const { getActiveView } = require('./activeView');
 const { renderEventBuckets } = require('./eventBuckets');
-const { calendars = [] } = require('./config');
+const { calendars = [] } = require('../config');
 
 const renderMenuBar = async () => {
   const { buckets, multiBucketEvents, timeMin, timeMax } = getActiveView();

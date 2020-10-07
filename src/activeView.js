@@ -7,14 +7,14 @@ const {
   eventBuckets: customBuckets = {},
   views: customViews = [],
   activeView: customActiveViewId = null,
-} = require('./config');
+} = require('../config');
 const {
   offsets: defaultOffsets,
   timeStamps: defaultTimeStamps,
   eventBuckets: defaultBuckets,
   views: defaultViews,
   activeView: defaultActiveViewId,
-} = require('./defaultConfig');
+} = require('../defaultConfig');
 
 const calculateTimeStamp = ({ base = 'now', offsetIds = [], offsets }) => offsetIds.reduce(
   (currentTimeStamp, offsetId) => {

@@ -3,8 +3,8 @@ const readline = require('readline');
 const { google } = require('googleapis');
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-const CREDENTIALS_PATH = `${__dirname}/credentials.json`;
-const TOKEN_PATH = `${__dirname}/token.json`;
+const CREDENTIALS_PATH = `${__dirname}/../credentials.json`;
+const TOKEN_PATH = `${__dirname}/../token.json`;
 
 const getToken = async ({ oAuth2Client, code }) => {
   try {

@@ -2,8 +2,8 @@
 
 const bitbar = require('bitbar');
 
-const { selectView, toggleCalendar, refreshCalendars } = require('./configHelpers');
-const { renderMenuBar } = require('./menuBar');
+const { selectView, toggleCalendar, refreshCalendars } = require('./src/configHelpers');
+const { renderMenuBar } = require('./src/menuBar');
 
 process.removeAllListeners('warning');
 

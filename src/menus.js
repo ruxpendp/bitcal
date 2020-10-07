@@ -4,8 +4,8 @@ const {
   activeView,
   views: customViews = [],
   calendars: configCalendars = []
-} = require('./config');
-const { activeView: defaultActiveView, views: defaultViews = [] } = require('./defaultConfig');
+} = require('../config');
+const { activeView: defaultActiveView, views: defaultViews = [] } = require('../defaultConfig');
 
 const renderView = ({ id, displayName }) => ({
   text: `${(activeView || defaultActiveView) === id ? '✓ ' : ''}${displayName}`,
