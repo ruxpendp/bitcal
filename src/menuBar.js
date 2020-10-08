@@ -8,25 +8,23 @@ const { getActiveView } = require('./activeView');
 const { renderEventBuckets } = require('./eventBuckets');
 const { calendars = [] } = require('../config');
 
+const renderIcon = icon => [{ text: '', templateImage: icon }, bitbar.separator];
+
 const renderMenuBar = async () => {
   const { buckets, multiBucketEvents, timeMin, timeMax } = getActiveView();
 
   const events = await getEvents({
-    calendarIds: calendars.filter(({ active }) => active).map(({ id }) => id),
+    calendarIds: calendars.reduce((ids, { active, id }) => active ? [...ids, id] : ids, []),
     timeMin,
     timeMax
   });
 
-  const output = [];
-
-  output.push({ text: '', templateImage: iconActive }, bitbar.separator);
-
-  output.push(...renderEventBuckets({ buckets, events, multiBucketEvents }));
-
-  output.push(renderViewsMenu());
-  output.push(renderCalendarConfigMenu());
-
-  return output;
+  return [
+    ...renderIcon(iconActive),
+    ...renderEventBuckets({ buckets, events, multiBucketEvents }),
+    renderViewsMenu(),
+    renderCalendarConfigMenu()
+  ];
 };
 
 exports.renderMenuBar = renderMenuBar;
