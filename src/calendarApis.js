@@ -28,8 +28,8 @@ const getEvents = async ({ calendarIds, timeMin, timeMax }) => {
         ...allFetchedEvents,
         ...newFetchedEvents.map(event => ({
           ...event,
-          start: moment(event.start.dateTime),
-          end: moment(event.end.dateTime)
+          start: moment(event.start.dateTime || event.start.date),
+          end: moment(event.end.dateTime || event.end.date)
         }))
       ];
     },
