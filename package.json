@@ -2,7 +2,7 @@
   "name": "bitbar-calendar",
   "version": "0.0.1",
   "description": "Google Calendar plugin for BitBar - see your upcoming events at a glance",
-  "main": "bitbarCalendar.1m.js",
+  "main": "src",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
