@@ -3,32 +3,19 @@ const bitbar = require('bitbar');
 
 const { primaryCalendar } = require('../config');
 
-const populateBuckets = ({ buckets, events, multiBucketEvents }) => {
-  events.forEach(event => {
-    for (const bucket of buckets) {
-      if (event.start < bucket.to && event.end > bucket.from) {
-        bucket.events.push(event);
-        if (!multiBucketEvents) break;
-      }
-    }
-  });
-
-  return buckets;
-};
-
-const humanize = ({ timeStamp, delta }) => {
-  if (Math.abs(delta >= 60)) return timeStamp.format('h:mm A');
-  if (delta < 0) return `${Math.abs(delta)}m ago`;
-  if (delta > 0) return `in ${delta}m`;
-  return 'now';
-};
-
 const formatUrl = htmlLink => {
   const url = new URL(htmlLink);
-  const pathname = url.pathname.split('/')
+  const pathname = url.pathname.split('/');
   pathname.splice(2, 0, `u/${primaryCalendar}/r`);
   url.pathname = pathname.join('/');
   return url.href;
+};
+
+const humanize = ({ timeStamp, delta }) => {
+  if (Math.abs(delta) >= 60) return timeStamp.format('h:mm A');
+  if (delta < 0) return `${Math.abs(delta)}m ago`;
+  if (delta > 0) return `in ${delta}m`;
+  return 'now';
 };
 
 const formatEvent = ({ summary, start, end, htmlLink, now }) => {
@@ -52,6 +39,19 @@ const reduceEvent = ({
     { text: defaultText, href },
     { text: alternateText, href, alternate: true }
   ]
+};
+
+const populateBuckets = ({ buckets, events, multiBucketEvents }) => {
+  events.forEach(event => {
+    for (const bucket of buckets) {
+      if (event.start < bucket.to && event.end > bucket.from) {
+        bucket.events.push(event);
+        if (!multiBucketEvents) break;
+      }
+    }
+  });
+
+  return buckets;
 };
 
 const renderEventBuckets = ({ buckets, events, multiBucketEvents }) => {
