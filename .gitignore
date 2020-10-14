@@ -118,3 +118,6 @@ config.json
 
 # Mac
 .DS_Store
+
+# VS Code
+*.code-workspace
