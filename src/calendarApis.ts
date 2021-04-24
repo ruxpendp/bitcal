@@ -10,7 +10,7 @@ interface EventParams {
   timeMax: string;
 }
 
-interface Event extends Omit<calendar_v3.Schema$Event, 'start' | 'end'> {
+export interface Event extends Omit<calendar_v3.Schema$Event, 'start' | 'end'> {
   start?: moment.Moment;
   end?: moment.Moment;
 }
@@ -30,7 +30,9 @@ export const getCalendars = async (): Promise<calendar_v3.Schema$CalendarListEnt
   return (await gcal.calendarList.list()).data.items || [];
 };
 
-export const getEvents = async ({ calendarIds, timeMin, timeMax }: EventParams) => {
+export const getEvents = async (
+  { calendarIds, timeMin, timeMax }: EventParams
+): Promise<Event[]> => {
   const gcal: calendar_v3.Calendar = google
     .calendar({ version: 'v3', auth: await getAuthClient() });
 
