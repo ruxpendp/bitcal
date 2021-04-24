@@ -9,9 +9,11 @@ const writeConfig = newConfig => {
   writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
 };
 
-const selectView = () => writeConfig({ ...config, activeView: process.argv[3] });
+const selectView = () => {
+  writeConfig({ ...config, activeView: process.argv[3] });
+};
 
-const toggleCalendar = async () => {
+const toggleCalendar = () => {
   const newCalendars = configCalendars.map(({ id, displayName, active }) => ({
     id,
     displayName,

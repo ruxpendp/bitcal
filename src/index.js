@@ -7,7 +7,7 @@ const optparse = {
   'select-view': selectView,
   'toggle-calendar': toggleCalendar,
   'refresh-calendars': refreshCalendars
-}
+};
 
 const bitbarCalendar = async () => {
 

@@ -31,8 +31,7 @@ const formatEvent = ({ summary, start, end, htmlLink, now }) => {
   }
 };
 
-const reduceEvent = ({
-  outputEvents, event: { summary, start, end, htmlLink }, now }) => {
+const reduceEvent = ({ outputEvents, event: { summary, start, end, htmlLink }, now }) => {
   const { defaultText, alternateText, href } = formatEvent({ summary, start, end, htmlLink, now });
   return [
     ...outputEvents,

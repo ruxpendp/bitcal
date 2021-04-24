@@ -18,7 +18,7 @@ const {
 
 const calculateTimeStamp = ({ base = 'now', offsetIds = [], offsets }) => offsetIds.reduce(
   (currentTimeStamp, offsetId) => {
-    const { func, args } = offsets[offsetId]
+    const { func, args } = offsets[offsetId];
     return currentTimeStamp[func](...args);
   },
   base === 'now' ? moment() : moment(base)

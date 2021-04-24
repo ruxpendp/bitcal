@@ -34,7 +34,6 @@ const renderMenuBar = async () => {
       { text: 'Debug', submenu: [{ text: error.stack }] }
     ];
   }
-
 };
 
 exports.renderMenuBar = renderMenuBar;
