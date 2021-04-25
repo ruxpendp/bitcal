@@ -1,12 +1,12 @@
 import bitbar from 'bitbar';
 
-import iconActive from '../iconActive.json';
-import iconInactive from '../iconInactive.json';
 import { getEvents, Event } from './calendarApis';
 import { renderViewsMenu, renderCalendarConfigMenu, MenuItem } from './menus';
 import { getActiveView, CustomConfig, CalculatedActiveView, Calendar } from './activeView';
 import { renderEventBuckets } from './eventBuckets';
-import config from '../config.json';
+const config = require('../config.json');
+const iconActive = require('../iconActive.json');
+const iconInactive = require('../iconInactive.json');
 
 const { calendars = [] }: CustomConfig = config;
 

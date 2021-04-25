@@ -1,10 +1,10 @@
 import moment, { Moment } from 'moment';
 import bitbar, { BitbarOptions } from 'bitbar';
 
-import { CalculatedEventBucket } from './activeView';
+import { CalculatedEventBucket, CustomConfig } from './activeView';
 import { MenuItem } from './menus';
 import { Event } from './calendarApis';
-import { primaryCalendar } from '../config.json';
+const config = require('../config.json');
 
 interface HumanDelta {
   timeStamp?: Moment;
@@ -33,10 +33,13 @@ interface EventRenderData {
   multiBucketEvents: boolean;
 }
 
+
+const { primaryCalendar }: CustomConfig = config;
+
 const formatUrl = (htmlLink: string): string => {
   const url: URL = new URL(htmlLink);
   const pathname: string[] = url.pathname.split('/');
-  pathname.splice(2, 0, `u/${primaryCalendar}/r`);
+  pathname.splice(2, 0, `u/${primaryCalendar || ''}/r`);
   url.pathname = pathname.join('/');
   return url.href;
 };

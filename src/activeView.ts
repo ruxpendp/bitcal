@@ -2,8 +2,8 @@ import moment, { Moment } from 'moment';
 import orderBy from 'lodash.orderby';
 
 import { Event } from './calendarApis';
-import customConfig from '../config.json';
-import defaultConfig from '../defaultConfig.json';
+const customConfig = require('../config.json');
+const defaultConfig = require('../defaultConfig.json');
 
 interface ConfigOffset {
   func: string;
@@ -188,7 +188,7 @@ const getActiveBuckets = ({ bucketIds, sort }: ActiveBucketParams): CalculatedEv
 };
 
 export const getActiveView = (): CalculatedActiveView => {
-  const activeViewId: string = customActiveViewId || defaultActiveViewId;
+  const activeViewId: string | null = customActiveViewId || defaultActiveViewId;
   const customViewIds: Set<string> = new Set(customViews.map(({ id }) => id));
   const views: ConfigView[] = [
     ...customViews,

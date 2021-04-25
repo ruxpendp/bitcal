@@ -4,7 +4,7 @@ import { calendar_v3 } from 'googleapis';
 
 import { CustomConfig, Calendar, Calendars } from './activeView';
 import { getCalendars } from './calendarApis';
-import config from '../config.json';
+const config = require('../config.json');
 
 const { writeFile } = promises;
 const { calendars: configCalendars = [] }: CustomConfig = config;

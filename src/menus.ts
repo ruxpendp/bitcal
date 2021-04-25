@@ -1,13 +1,9 @@
 import bitbar, { BitbarOptions, Options } from 'bitbar';
 import { CustomConfig, DefaultConfig, ConfigView } from './activeView';
-import customConfig from '../config.json';
-import defaultConfig from '../defaultConfig.json';
+const customConfig = require('../config.json');
+const defaultConfig = require('../defaultConfig.json');
 
 export type MenuItem = string | typeof bitbar.separator | Options;
-
-// export interface Options extends BitbarOptions {
-//   submenu?: MenuItem[];
-// }
 
 
 const {
