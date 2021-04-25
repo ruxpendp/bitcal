@@ -1,6 +1,6 @@
 #!/usr/bin/env /usr/local/bin/node
 
-const { bitbarCalendar } = require('./src/index');
+const { bitbarCalendar } = require('./out/index');
 
 process.removeAllListeners('warning');
 
