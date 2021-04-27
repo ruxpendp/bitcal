@@ -8,6 +8,26 @@
       "func": "add",
       "args": [2, "days"]
     },
+    "default_add3Days": {
+      "func": "add",
+      "args": [3, "days"]
+    },
+    "default_add4Days": {
+      "func": "add",
+      "args": [4, "days"]
+    },
+    "default_add5Days": {
+      "func": "add",
+      "args": [5, "days"]
+    },
+    "default_add6Days": {
+      "func": "add",
+      "args": [6, "days"]
+    },
+    "default_add7Days": {
+      "func": "add",
+      "args": [7, "days"]
+    },
     "default_add1Week": {
       "func": "add",
       "args": [1, "week"]
@@ -39,6 +59,41 @@
         "default_startOfDay"
       ]
     },
+    "default_now+3dStart": {
+      "base": "now",
+      "offsets": [
+        "default_add3Days",
+        "default_startOfDay"
+      ]
+    },
+    "default_now+4dStart": {
+      "base": "now",
+      "offsets": [
+        "default_add4Days",
+        "default_startOfDay"
+      ]
+    },
+    "default_now+5dStart": {
+      "base": "now",
+      "offsets": [
+        "default_add5Days",
+        "default_startOfDay"
+      ]
+    },
+    "default_now+6dStart": {
+      "base": "now",
+      "offsets": [
+        "default_add6Days",
+        "default_startOfDay"
+      ]
+    },
+    "default_now+7dStart": {
+      "base": "now",
+      "offsets": [
+        "default_add7Days",
+        "default_startOfDay"
+      ]
+    },
     "default_nextWeekStart": {
       "base": "now",
       "offsets": [
@@ -49,24 +104,55 @@
   },
   "eventBuckets": {
     "default_ongoing": {
-      "displayName": "Ongoing",
       "from": "default_now",
-      "to": "default_now"
+      "to": "default_now",
+      "displayName": "Ongoing"
     },
     "default_today": {
-      "displayName": "Today",
       "from": "default_now",
-      "to": "default_tomorrowStart"
+      "to": "default_tomorrowStart",
+      "displayName": "Today"
     },
     "default_tomorrow": {
-      "displayName": "Tomorrow",
       "from": "default_tomorrowStart",
-      "to": "default_now+2dStart"
+      "to": "default_now+2dStart",
+      "displayName": "Tomorrow"
+    },
+    "default_dayAfterTomorrow": {
+      "from": "default_now+2dStart",
+      "to": "default_now+3dStart",
+      "displayName": "{from}",
+      "displayFormat": "dddd"
+    },
+    "default_3DaysFromToday": {
+      "from": "default_now+3dStart",
+      "to": "default_now+4dStart",
+      "displayName": "{from}",
+      "displayFormat": "dddd"
+    },
+    "default_4DaysFromToday": {
+      "from": "default_now+4dStart",
+      "to": "default_now+5dStart",
+      "displayName": "{from}",
+      "displayFormat": "dddd"
+    },
+    "default_5DaysFromToday": {
+      "from": "default_now+5dStart",
+      "to": "default_now+6dStart",
+      "displayName": "{from}",
+      "displayFormat": "dddd"
+    },
+    "default_6DaysFromToday": {
+      "from": "default_now+6dStart",
+      "to": "default_now+7dStart",
+      "displayName": "{from}",
+      "displayFormat": "dddd"
     },
     "default_thisWeek": {
-      "displayName": "This Week",
       "from": "default_now",
-      "to": "default_nextWeekStart"
+      "to": "default_nextWeekStart",
+      "displayName": "This Week",
+      "eventFormat": "ddd h:mm A"
     }
   },
   "views": [
@@ -79,7 +165,7 @@
           "default_today",
           "default_tomorrow"
         ],
-        "sort": true,
+        "sort": false,
         "multiBucketEvents": false
       }
     },
@@ -93,7 +179,40 @@
           "default_tomorrow",
           "default_thisWeek"
         ],
-        "sort": true,
+        "sort": false,
+        "multiBucketEvents": false
+      }
+    },
+    {
+      "id": "default_4Days",
+      "displayName": "4 Days",
+      "eventBuckets": {
+        "buckets": [
+          "default_ongoing",
+          "default_today",
+          "default_tomorrow",
+          "default_dayAfterTomorrow",
+          "default_3DaysFromToday"
+        ],
+        "sort": false,
+        "multiBucketEvents": false
+      }
+    },
+    {
+      "id": "default_7Days",
+      "displayName": "7 Days",
+      "eventBuckets": {
+        "buckets": [
+          "default_ongoing",
+          "default_today",
+          "default_tomorrow",
+          "default_dayAfterTomorrow",
+          "default_3DaysFromToday",
+          "default_4DaysFromToday",
+          "default_5DaysFromToday",
+          "default_6DaysFromToday"
+        ],
+        "sort": false,
         "multiBucketEvents": false
       }
     }
