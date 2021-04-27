@@ -20,11 +20,13 @@ const getTimeStamps = () => {
 };
 const getBuckets = () => {
     const timeStamps = getTimeStamps();
-    return Object.entries(Object.assign(Object.assign({}, defaultBuckets), customBuckets)).reduce((buckets, [bucketId, { displayName, from: fromTimeStampId, to: toTimeStampId }]) => (Object.assign(Object.assign({}, buckets), { [bucketId]: {
-            displayName,
+    return Object.entries(Object.assign(Object.assign({}, defaultBuckets), customBuckets)).reduce((buckets, [bucketId, { from: fromTimeStampId, to: toTimeStampId, displayName, displayFormat, eventFormat }]) => (Object.assign(Object.assign({}, buckets), { [bucketId]: {
             from: timeStamps[fromTimeStampId],
             to: timeStamps[toTimeStampId],
-            events: []
+            displayName,
+            displayFormat,
+            events: [],
+            eventFormat,
         } })), {});
 };
 const getActiveBuckets = ({ bucketIds, sort }) => {

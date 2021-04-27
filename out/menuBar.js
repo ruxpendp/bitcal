@@ -21,9 +21,6 @@ const eventBuckets_1 = require("./eventBuckets");
 const config = require('../config.json');
 const iconActive = require('../iconActive.json');
 const iconInactive = require('../iconInactive.json');
-// import config from '../config.json';
-// import iconActive from '../iconActive.json';
-// import iconInactive from '../iconInactive.json';
 const { calendars = [] } = config;
 const renderIcon = (icon) => [
     { text: '', templateImage: icon },

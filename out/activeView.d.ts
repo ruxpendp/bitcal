@@ -15,18 +15,22 @@ interface ConfigTimeStamps {
     [timeStampId: string]: ConfigTimeStamp;
 }
 interface ConfigEventBucket {
-    displayName: string;
     from: string;
     to: string;
+    displayName: string;
+    displayFormat?: string;
+    eventFormat?: string;
 }
 interface ConfigEventBuckets {
     [bucketId: string]: ConfigEventBucket;
 }
 export interface CalculatedEventBucket {
-    displayName: string;
     from: Moment;
     to: Moment;
+    displayName: string;
+    displayFormat?: string;
     events: Event[];
+    eventFormat?: string;
 }
 export interface ConfigView {
     id: string;

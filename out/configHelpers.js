@@ -17,7 +17,6 @@ const fs_1 = require("fs");
 const lodash_orderby_1 = __importDefault(require("lodash.orderby"));
 const calendarApis_1 = require("./calendarApis");
 const config = require('../config.json');
-// import config from '../config.json';
 const { writeFile } = fs_1.promises;
 const { calendars: configCalendars = [] } = config;
 const writeConfig = (newConfig) => {

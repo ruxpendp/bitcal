@@ -7,6 +7,7 @@ exports.renderEventBuckets = void 0;
 const moment_1 = __importDefault(require("moment"));
 const bitbar_1 = __importDefault(require("bitbar"));
 const config = require('../config.json');
+const DEFAULT_FORMAT = 'h:mm A';
 const { primaryCalendar } = config;
 const formatUrl = (htmlLink) => {
     const url = new URL(htmlLink);
@@ -15,35 +16,43 @@ const formatUrl = (htmlLink) => {
     url.pathname = pathname.join('/');
     return url.href;
 };
-const humanize = ({ timeStamp, delta }) => {
+const humanize = ({ timeStamp, delta, format }) => {
     if (!timeStamp)
         return 'unknown';
     if (Math.abs(delta) >= 60)
-        return timeStamp.format('h:mm A');
+        return timeStamp.format(format);
     if (delta < 0)
         return `${Math.abs(delta)}m ago`;
     if (delta > 0)
         return `in ${delta}m`;
     return 'now';
 };
-const formatEvent = ({ summary, start, end, htmlLink, now }) => {
+const formatEvent = ({ summary, start, end, htmlLink, eventFormat, now }) => {
+    const format = eventFormat || DEFAULT_FORMAT;
     const startDelta = Math.round(moment_1.default.duration(moment_1.default(start).seconds(0).diff(moment_1.default(now).seconds(0))).asMinutes());
-    const shortText = humanize({ timeStamp: start, delta: startDelta });
-    const startText = start ? start.format('h:mm A') : 'no start time';
-    const endText = end ? end.format('h:mm A') : 'no end time';
+    const shortText = humanize({ timeStamp: start, delta: startDelta, format });
+    const startText = start ? start.format(format) : 'no start time';
+    const endText = end ? end.format(format) : 'no end time';
     return {
         defaultText: `${shortText}  –  ${summary}`,
         alternateText: `${startText} - ${endText}  –  ${summary}`,
         href: htmlLink ? formatUrl(htmlLink) : ''
     };
 };
-const reduceEvent = ({ outputEvents, event: { summary, start, end, htmlLink }, now }) => {
-    const { defaultText, alternateText, href } = formatEvent({ summary, start, end, htmlLink, now });
+const reduceEvent = ({ outputEvents, event: { summary, start, end, htmlLink }, eventFormat, now }) => {
+    const { defaultText, alternateText, href } = formatEvent({ summary, start, end, htmlLink, eventFormat, now });
     return [
         ...outputEvents,
         { text: defaultText, href },
         { text: alternateText, href, alternate: true }
     ];
+};
+const formatDisplayName = ({ from, to, displayName, displayFormat = '' }) => {
+    const formatMap = {
+        '{from}': from.format(displayFormat),
+        '{to}': to.format(displayFormat)
+    };
+    return displayName.replace(new RegExp(Object.keys(formatMap).join('|'), 'g'), matched => formatMap[matched]);
 };
 const populateBuckets = ({ buckets, events, multiBucketEvents }) => {
     events.forEach(event => {
@@ -61,13 +70,13 @@ const populateBuckets = ({ buckets, events, multiBucketEvents }) => {
 const renderEventBuckets = ({ buckets, events, multiBucketEvents }) => {
     const now = moment_1.default();
     const eventBuckets = populateBuckets({ buckets, events, multiBucketEvents });
-    return eventBuckets.reduce((output, { displayName, events }) => {
+    return eventBuckets.reduce((output, { from, to, displayName, displayFormat, events, eventFormat }) => {
         if (events.length === 0)
             return output;
         return [
             ...output,
-            { text: displayName },
-            ...events.reduce((outputEvents, event) => reduceEvent({ outputEvents, event, now }), []),
+            { text: formatDisplayName({ from, to, displayName, displayFormat }) },
+            ...events.reduce((outputEvents, event) => reduceEvent({ outputEvents, event, eventFormat, now }), []),
             bitbar_1.default.separator
         ];
     }, []);
