@@ -36,9 +36,11 @@ interface CalculatedTimeStamps {
 }
 
 interface ConfigEventBucket {
-  displayName: string;
   from: string;
   to: string;
+  displayName: string;
+  displayFormat?: string;
+  eventFormat?: string;
 }
 
 interface ConfigEventBuckets {
@@ -48,10 +50,12 @@ interface ConfigEventBuckets {
 type ConfigEventBucketEntries = [string, ConfigEventBucket];
 
 export interface CalculatedEventBucket {
-  displayName: string;
   from: Moment;
   to: Moment;
+  displayName: string;
+  displayFormat?: string;
   events: Event[];
+  eventFormat?: string;
 }
 
 interface CalculatedEventBuckets {
@@ -159,15 +163,17 @@ const getBuckets = (): CalculatedEventBuckets => {
       buckets: CalculatedEventBuckets,
       [
         bucketId,
-        { displayName, from: fromTimeStampId, to: toTimeStampId }
+        { from: fromTimeStampId, to: toTimeStampId, displayName, displayFormat, eventFormat }
       ]: ConfigEventBucketEntries
     ) => ({
       ...buckets,
       [bucketId]: {
-        displayName,
         from: timeStamps[fromTimeStampId],
         to: timeStamps[toTimeStampId],
-        events: []
+        displayName,
+        displayFormat,
+        events: [],
+        eventFormat,
       }
     }),
     {}

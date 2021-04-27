@@ -9,9 +9,11 @@ const config = require('../config.json');
 interface HumanDelta {
   timeStamp?: Moment;
   delta: number;
+  format: string;
 }
 
 interface EventFormatData extends Event {
+  eventFormat?: string;
   now: Moment;
 }
 
@@ -24,7 +26,19 @@ interface FormattedEvent {
 interface EventReducer {
   outputEvents: BitbarOptions[];
   event: Event;
+  eventFormat?: string;
   now: Moment;
+}
+
+interface FormatDisplayNameData {
+  from: Moment;
+  to: Moment;
+  displayName: string;
+  displayFormat?: string;
+}
+
+interface FormatMap {
+  [matched: string]: string;
 }
 
 interface EventRenderData {
@@ -33,6 +47,8 @@ interface EventRenderData {
   multiBucketEvents: boolean;
 }
 
+
+const DEFAULT_FORMAT: string = 'h:mm A';
 
 const { primaryCalendar }: CustomConfig = config;
 
@@ -44,21 +60,24 @@ const formatUrl = (htmlLink: string): string => {
   return url.href;
 };
 
-const humanize = ({ timeStamp, delta }: HumanDelta): string => {
+const humanize = ({ timeStamp, delta, format }: HumanDelta): string => {
   if (!timeStamp) return 'unknown';
-  if (Math.abs(delta) >= 60) return timeStamp.format('h:mm A');
+  if (Math.abs(delta) >= 60) return timeStamp.format(format);
   if (delta < 0) return `${Math.abs(delta)}m ago`;
   if (delta > 0) return `in ${delta}m`;
   return 'now';
 };
 
-const formatEvent = ({ summary, start, end, htmlLink, now }: EventFormatData): FormattedEvent => {
+const formatEvent = (
+  { summary, start, end, htmlLink, eventFormat, now }: EventFormatData
+): FormattedEvent => {
+  const format = eventFormat || DEFAULT_FORMAT;
   const startDelta: number = Math.round(
     moment.duration(moment(start).seconds(0).diff(moment(now).seconds(0))).asMinutes()
   );
-  const shortText: string = humanize({ timeStamp: start, delta: startDelta });
-  const startText: string = start ? start.format('h:mm A') : 'no start time';
-  const endText: string = end ? end.format('h:mm A'): 'no end time';
+  const shortText: string = humanize({ timeStamp: start, delta: startDelta, format });
+  const startText: string = start ? start.format(format) : 'no start time';
+  const endText: string = end ? end.format(format): 'no end time';
 
   return {
     defaultText: `${shortText}  –  ${summary}`,
@@ -68,16 +87,30 @@ const formatEvent = ({ summary, start, end, htmlLink, now }: EventFormatData): F
 };
 
 const reduceEvent = (
-  { outputEvents, event: { summary, start, end, htmlLink }, now }: EventReducer
+  { outputEvents, event: { summary, start, end, htmlLink }, eventFormat, now }: EventReducer
 ): BitbarOptions[] => {
   const { defaultText, alternateText, href }: FormattedEvent = formatEvent(
-    { summary, start, end, htmlLink, now }
+    { summary, start, end, htmlLink, eventFormat, now }
   );
   return [
     ...outputEvents,
     { text: defaultText, href },
     { text: alternateText, href, alternate: true }
   ]
+};
+
+const formatDisplayName = (
+  { from, to, displayName, displayFormat = '' }: FormatDisplayNameData
+): string => {
+  const formatMap: FormatMap = {
+    '{from}': from.format(displayFormat),
+    '{to}': to.format(displayFormat)
+  };
+
+  return displayName.replace(
+    new RegExp(Object.keys(formatMap).join('|'), 'g'),
+    matched => formatMap[matched]
+  );
 };
 
 const populateBuckets = (
@@ -107,14 +140,17 @@ export const renderEventBuckets = (
   );
 
   return eventBuckets.reduce(
-    (output: MenuItem[], { displayName, events }: CalculatedEventBucket): MenuItem[] => {
+    (
+      output: MenuItem[],
+      { from, to, displayName, displayFormat, events, eventFormat }: CalculatedEventBucket
+    ): MenuItem[] => {
       if (events.length === 0) return output;
       return [
         ...output,
-        { text: displayName },
+        { text: formatDisplayName({ from, to, displayName, displayFormat }) },
         ...events.reduce(
           (outputEvents: BitbarOptions[], event: Event) => reduceEvent(
-            { outputEvents, event, now }
+            { outputEvents, event, eventFormat, now }
           ),
           []
         ),
