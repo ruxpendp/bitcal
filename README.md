@@ -1,5 +1,7 @@
 # BitCal
-Google Calendar plugin for xbar - see your upcoming events at a glance
+Google Calendar plugin for xbar - see your upcoming events at a glance.
+
+Fully configurable/customizable display views. Select from default views or create your own!
 
 ## Installation
 ### Prerequisites
