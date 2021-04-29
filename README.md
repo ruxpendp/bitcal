@@ -5,6 +5,7 @@ Fully configurable/customizable display views. Select from default views or crea
 
 ## Installation
 ### Prerequisites
+* [xbar](https://xbarapp.com/)
 * [Node.js](https://nodejs.org/en/)
 ### Get Repo
 * `git clone` or download the repository
