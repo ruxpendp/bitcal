@@ -26,6 +26,7 @@ const getToken = ({ oAuth2Client, code }) => __awaiter(void 0, void 0, void 0, f
     }
     catch (error) {
         console.error('Error retrieving access token');
+        error.category = 'access_token';
         throw error;
     }
 });
@@ -60,6 +61,7 @@ const parseCredentials = (path) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (error) {
         console.error('Error loading credentials');
+        error.category = 'credentials';
         throw error;
     }
 });

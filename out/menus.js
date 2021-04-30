@@ -5,12 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderCalendarConfigMenu = exports.renderViewsMenu = void 0;
 const bitbar_1 = __importDefault(require("bitbar"));
-const customConfig = require('../config.json');
-const defaultConfig = require('../defaultConfig.json');
-const { activeView, views: customViews = [], calendars: configCalendars = [] } = customConfig;
-const { activeView: defaultActiveView, views: defaultViews = [] } = defaultConfig;
-const renderView = ({ id, displayName }) => ({
-    text: `${(activeView || defaultActiveView) === id ? '✓ ' : ''}${displayName}`,
+// const {
+//   activeView,
+//   views: customViews = [],
+//   calendars: configCalendars = []
+// }: CustomConfig = customConfig;
+// const { activeView: defaultActiveView, views: defaultViews = [] }: DefaultConfig = defaultConfig;
+const renderView = ({ id, displayName, activeView }) => ({
+    text: `${activeView === id ? '✓ ' : ''}${displayName}`,
     bash: process.argv[0],
     param1: process.argv[1],
     param2: 'select-view',
@@ -18,7 +20,7 @@ const renderView = ({ id, displayName }) => ({
     terminal: false,
     refresh: true
 });
-const renderViewsMenu = () => {
+const renderViewsMenu = ({ customConfig: { views: customViews = [], activeView }, defaultConfig: { views: defaultViews, activeView: defaultActiveView } }) => {
     const customViewIds = new Set(customViews.map(({ id }) => id));
     const views = [
         ...customViews,
@@ -26,11 +28,11 @@ const renderViewsMenu = () => {
     ];
     return {
         text: 'Views',
-        submenu: views.map(renderView)
+        submenu: views.map(({ id, displayName }) => renderView({ id, displayName, activeView: activeView || defaultActiveView }))
     };
 };
 exports.renderViewsMenu = renderViewsMenu;
-const renderCalendarConfigMenu = () => ({
+const renderCalendarConfigMenu = ({ calendars: configCalendars = [] }) => ({
     text: 'Calendars',
     submenu: [
         ...configCalendars.map(({ id, displayName, active, primary }) => ({

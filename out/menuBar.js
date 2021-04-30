@@ -18,16 +18,42 @@ const calendarApis_1 = require("./calendarApis");
 const menus_1 = require("./menus");
 const activeView_1 = require("./activeView");
 const eventBuckets_1 = require("./eventBuckets");
-const config = require('../config.json');
+const configHelpers_1 = require("./configHelpers");
+let customConfig = require('../config.json');
+const defaultConfig = require('../defaultConfig.json');
 const iconActive = require('../iconActive.json');
 const iconInactive = require('../iconInactive.json');
-const { calendars = [] } = config;
+const CREDENTIAL_LINK = ('https://github.com/ruxpendp/bitcal#get-google-calendar-credentials');
+const ERROR_ROWS = {
+    credentials: [
+        { text: 'Unable to load credentials' },
+        { text: 'Get Credentials', href: CREDENTIAL_LINK }
+    ],
+    access_token: [{ text: 'Error retrieving access token' }],
+    default: [{ text: 'Unable to retrieve events' }]
+};
+const renderError = (error) => [
+    ...(error.category ? ERROR_ROWS[error.category] : ERROR_ROWS.default),
+    bitbar_1.default.separator,
+];
 const renderIcon = (icon) => [
     { text: '', templateImage: icon },
     bitbar_1.default.separator
 ];
+const renderDebugMenu = (error) => ({
+    text: 'Debug',
+    submenu: [
+        { text: `Error category: ${error.category || 'none'}` },
+        bitbar_1.default.separator,
+        { text: error.stack || '(no stack)' }
+    ]
+});
 const renderMenuBar = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (!customConfig.calendars) {
+            customConfig = yield configHelpers_1.refreshCalendars(true);
+        }
+        let { calendars = [] } = customConfig;
         const { buckets, multiBucketEvents, timeMin, timeMax } = activeView_1.getActiveView();
         const events = yield calendarApis_1.getEvents({
             calendarIds: calendars.reduce((ids, { active, id }) => active ? [...ids, id] : ids, []),
@@ -37,16 +63,18 @@ const renderMenuBar = () => __awaiter(void 0, void 0, void 0, function* () {
         return [
             ...renderIcon(iconActive),
             ...eventBuckets_1.renderEventBuckets({ buckets, events, multiBucketEvents }),
-            menus_1.renderViewsMenu(),
-            menus_1.renderCalendarConfigMenu()
+            menus_1.renderViewsMenu({ customConfig, defaultConfig }),
+            menus_1.renderCalendarConfigMenu(customConfig)
         ];
     }
     catch (error) {
         return [
             ...renderIcon(iconInactive),
-            { text: 'Could Not Fetch Agenda' },
+            ...renderError(error),
+            menus_1.renderViewsMenu({ customConfig, defaultConfig }),
+            menus_1.renderCalendarConfigMenu(customConfig),
             bitbar_1.default.separator,
-            { text: 'Debug', submenu: [{ text: error.stack }] }
+            renderDebugMenu(error)
         ];
     }
 });

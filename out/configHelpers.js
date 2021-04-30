@@ -19,29 +19,35 @@ const calendarApis_1 = require("./calendarApis");
 const config = require('../config.json');
 const { writeFile } = fs_1.promises;
 const { calendars: configCalendars = [] } = config;
-const writeConfig = (newConfig) => {
-    writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
-};
+const writeConfig = (newConfig) => __awaiter(void 0, void 0, void 0, function* () {
+    yield writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
+});
 const selectView = () => {
     writeConfig(Object.assign(Object.assign({}, config), { activeView: process.argv[3] }));
 };
 exports.selectView = selectView;
 const toggleCalendar = () => {
-    const newCalendars = configCalendars.map(({ id, displayName, active }) => ({
+    const newCalendars = configCalendars.map(({ id, displayName, active, primary }) => ({
         id,
         displayName,
-        active: id === process.argv[3] ? !active : active
+        active: id === process.argv[3] ? !active : active,
+        primary
     }));
     writeConfig(Object.assign(Object.assign({}, config), { calendars: newCalendars }));
 };
 exports.toggleCalendar = toggleCalendar;
-const refreshCalendars = () => __awaiter(void 0, void 0, void 0, function* () {
+const calendarIsActive = ({ activatePrimary, primary, id, currentCalendars }) => {
+    if (activatePrimary && primary)
+        return true;
+    return (id && currentCalendars[id]) ? currentCalendars[id].active : false;
+};
+const refreshCalendars = (activatePrimary = false) => __awaiter(void 0, void 0, void 0, function* () {
     const fetchedCalendars = yield calendarApis_1.getCalendars();
     const currentCalendars = configCalendars.reduce((calendars, calendar) => (Object.assign(Object.assign({}, calendars), { [calendar.id]: calendar })), {});
     const newCalendars = lodash_orderby_1.default(fetchedCalendars.map(({ id, summary, primary }) => ({
         id: id || `no id ${Math.random()}`,
         displayName: summary || '<Unnamed Calendar>',
-        active: (id && currentCalendars[id]) ? currentCalendars[id].active : false,
+        active: calendarIsActive({ activatePrimary, primary, id, currentCalendars }),
         primary: primary || undefined
     })), [
         ({ primary }) => Boolean(primary),
@@ -51,7 +57,9 @@ const refreshCalendars = () => __awaiter(void 0, void 0, void 0, function* () {
     const primaryCalendarId = newCalendars.length && newCalendars[0].primary
         ? newCalendars[0].id
         : null;
-    writeConfig(Object.assign(Object.assign({}, config), { calendars: newCalendars, primaryCalendar: primaryCalendarId }));
+    const newConfig = Object.assign(Object.assign({}, config), { calendars: newCalendars, primaryCalendar: primaryCalendarId });
+    yield writeConfig(newConfig);
+    return newConfig;
 });
 exports.refreshCalendars = refreshCalendars;
 //# sourceMappingURL=configHelpers.js.map
