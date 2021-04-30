@@ -33,6 +33,7 @@ const getToken = async ({ oAuth2Client, code }: GetTokenArgs): Promise<Auth.Cred
     return (await oAuth2Client.getToken(code)).tokens;
   } catch (error) {
     console.error('Error retrieving access token');
+    error.category = 'access_token';
     throw error;
   }
 };
@@ -75,6 +76,7 @@ const parseCredentials = async (path: string): Promise<ParsedCredentials> => {
     return JSON.parse((await readFile(path)).toString());
   } catch (error) {
     console.error('Error loading credentials');
+    error.category = 'credentials';
     throw error;
   }
 };
