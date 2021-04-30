@@ -5,12 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderCalendarConfigMenu = exports.renderViewsMenu = void 0;
 const bitbar_1 = __importDefault(require("bitbar"));
-// const {
-//   activeView,
-//   views: customViews = [],
-//   calendars: configCalendars = []
-// }: CustomConfig = customConfig;
-// const { activeView: defaultActiveView, views: defaultViews = [] }: DefaultConfig = defaultConfig;
 const renderView = ({ id, displayName, activeView }) => ({
     text: `${activeView === id ? '✓ ' : ''}${displayName}`,
     bash: process.argv[0],
