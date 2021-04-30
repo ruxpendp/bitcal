@@ -6,11 +6,19 @@ import { CustomConfig, Calendar, Calendars } from './activeView';
 import { getCalendars } from './calendarApis';
 const config = require('../config.json');
 
+interface CalendarIsActive {
+  activatePrimary: boolean;
+  primary: calendar_v3.Schema$CalendarListEntry['primary'];
+  id: calendar_v3.Schema$CalendarListEntry['id'];
+  currentCalendars: Calendars;
+}
+
+
 const { writeFile } = promises;
 const { calendars: configCalendars = [] }: CustomConfig = config;
 
-const writeConfig = (newConfig: object): void => {
-  writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
+const writeConfig = async (newConfig: object): Promise<void> => {
+  await writeFile(`${__dirname}/../config.json`, JSON.stringify(newConfig, null, 2));
 };
 
 export const selectView = (): void => {
@@ -18,15 +26,25 @@ export const selectView = (): void => {
 };
 
 export const toggleCalendar = (): void => {
-  const newCalendars: Calendar[] = configCalendars.map(({ id, displayName, active }: Calendar) => ({
-    id,
-    displayName,
-    active: id === process.argv[3] ? !active : active
-  }));
+  const newCalendars: Calendar[] = configCalendars.map(
+    ({ id, displayName, active, primary }: Calendar) => ({
+      id,
+      displayName,
+      active: id === process.argv[3] ? !active : active,
+      primary
+    })
+  );
   writeConfig({ ...config, calendars: newCalendars });
 };
 
-export const refreshCalendars = async (): Promise<void> => {
+const calendarIsActive = (
+  { activatePrimary, primary, id, currentCalendars }: CalendarIsActive
+): boolean => {
+  if (activatePrimary && primary) return true;
+  return (id && currentCalendars[id]) ? currentCalendars[id].active : false;
+};
+
+export const refreshCalendars = async (activatePrimary: boolean = false): Promise<CustomConfig> => {
   const fetchedCalendars: calendar_v3.Schema$CalendarListEntry[] = await getCalendars();
   const currentCalendars: Calendars = configCalendars.reduce(
     (calendars: Calendars, calendar: Calendar) => ({ ...calendars, [calendar.id]: calendar }),
@@ -36,7 +54,7 @@ export const refreshCalendars = async (): Promise<void> => {
     fetchedCalendars.map(({ id, summary, primary }: calendar_v3.Schema$CalendarListEntry) => ({
       id: id || `no id ${Math.random()}`,
       displayName: summary || '<Unnamed Calendar>',
-      active: (id && currentCalendars[id]) ? currentCalendars[id].active : false,
+      active: calendarIsActive({ activatePrimary, primary, id, currentCalendars }),
       primary: primary || undefined
     })),
     [
@@ -50,5 +68,12 @@ export const refreshCalendars = async (): Promise<void> => {
     ? newCalendars[0].id
     : null;
 
-  writeConfig({ ...config, calendars: newCalendars, primaryCalendar: primaryCalendarId });
+  const newConfig: CustomConfig = {
+    ...config,
+    calendars: newCalendars,
+    primaryCalendar: primaryCalendarId
+  };
+  await writeConfig(newConfig);
+
+  return newConfig;
 };
