@@ -38,9 +38,6 @@ Fully configurable/customizable display. Select from default views or create you
 _Documentation coming soon! In the meantime check out `defaultConfig.json` to see what is possible. You can create your own `views`, `eventBuckets`, `timeStamps`, and `offsets` in `config.json`._
 
 ## Future Plans
-* More user-friendly onboarding
-  * Menu item button to login
-  * Auto refresh calendars on first login
 * Config to indicate which calendar an event comes from
 * Color coded calendars/events?
 * Test coverage
