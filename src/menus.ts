@@ -1,21 +1,21 @@
 import bitbar, { BitbarOptions, Options } from 'bitbar';
 import { CustomConfig, DefaultConfig, ConfigView } from './activeView';
-const customConfig = require('../config.json');
-const defaultConfig = require('../defaultConfig.json');
+
+interface Configs {
+  customConfig: CustomConfig;
+  defaultConfig: DefaultConfig;
+}
+
+interface RenderView {
+  id: ConfigView['id'];
+  displayName: ConfigView['displayName'];
+  activeView: DefaultConfig['activeView'];
+}
 
 export type MenuItem = string | typeof bitbar.separator | Options;
 
-
-const {
-  activeView,
-  views: customViews = [],
-  calendars: configCalendars = []
-}: CustomConfig = customConfig;
-
-const { activeView: defaultActiveView, views: defaultViews = [] }: DefaultConfig = defaultConfig;
-
-const renderView = ({ id, displayName }: ConfigView): BitbarOptions => ({
-  text: `${(activeView || defaultActiveView) === id ? '✓ ' : ''}${displayName}`,
+const renderView = ({ id, displayName, activeView }: RenderView): BitbarOptions => ({
+  text: `${activeView === id ? '✓ ' : ''}${displayName}`,
   bash: process.argv[0],
   param1: process.argv[1],
   param2: 'select-view',
@@ -24,7 +24,12 @@ const renderView = ({ id, displayName }: ConfigView): BitbarOptions => ({
   refresh: true
 });
 
-export const renderViewsMenu = (): Options => {
+export const renderViewsMenu = (
+  {
+    customConfig: { views: customViews = [], activeView },
+    defaultConfig: { views: defaultViews, activeView: defaultActiveView }
+  }: Configs
+): Options => {
   const customViewIds: Set<string> = new Set(customViews.map(({ id }) => id));
   const views: ConfigView[] = [
     ...customViews,
@@ -32,11 +37,13 @@ export const renderViewsMenu = (): Options => {
   ];
   return {
     text: 'Views',
-    submenu: views.map(renderView)
+    submenu: views.map(({ id, displayName }: ConfigView) => renderView({ id, displayName, activeView: activeView || defaultActiveView }))
   };
 };
 
-export const renderCalendarConfigMenu = (): Options => ({
+export const renderCalendarConfigMenu = (
+  { calendars: configCalendars = [] }: CustomConfig
+): Options => ({
   text: 'Calendars',
   submenu: [
     ...configCalendars.map(({ id, displayName, active, primary }) => ({
