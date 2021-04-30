@@ -1,22 +1,65 @@
-import bitbar from 'bitbar';
+import bitbar, { BitbarOptions } from 'bitbar';
 
 import { getEvents, Event } from './calendarApis';
 import { renderViewsMenu, renderCalendarConfigMenu, MenuItem } from './menus';
-import { getActiveView, CustomConfig, CalculatedActiveView, Calendar } from './activeView';
+import {
+  getActiveView,
+  CustomConfig,
+  DefaultConfig,
+  CalculatedActiveView,
+  Calendar
+} from './activeView';
 import { renderEventBuckets } from './eventBuckets';
-const config = require('../config.json');
+import { refreshCalendars } from './configHelpers';
+let customConfig: CustomConfig = require('../config.json');
+const defaultConfig: DefaultConfig = require('../defaultConfig.json');
 const iconActive = require('../iconActive.json');
 const iconInactive = require('../iconInactive.json');
 
-const { calendars = [] }: CustomConfig = config;
+interface CustomError extends Error {
+  category?: string;
+}
+
+
+const CREDENTIAL_LINK: string = (
+  'https://github.com/ruxpendp/bitcal#get-google-calendar-credentials'
+);
+
+const ERROR_ROWS: { [category: string]: BitbarOptions[] } = {
+  credentials: [
+    { text: 'Unable to load credentials' },
+    { text: 'Get Credentials', href: CREDENTIAL_LINK }
+  ],
+  access_token: [{ text: 'Error retrieving access token' }],
+  default: [{ text: 'Unable to retrieve events' }]
+};
+
+const renderError = (error: CustomError): MenuItem[] => [
+  ...(error.category ? ERROR_ROWS[error.category] : ERROR_ROWS.default),
+  bitbar.separator,
+];
 
 const renderIcon = (icon: string): MenuItem[] => [
   { text: '', templateImage: icon },
   bitbar.separator
 ];
 
+const renderDebugMenu = (error: CustomError): MenuItem => ({
+  text: 'Debug',
+  submenu: [
+    { text: `Error category: ${error.category || 'none'}` },
+    bitbar.separator,
+    { text: error.stack || '(no stack)' }
+  ]
+});
+
 export const renderMenuBar = async (): Promise<MenuItem[]> => {
   try {
+    if (!customConfig.calendars) {
+      customConfig = await refreshCalendars(true);
+    }
+
+    let { calendars = [] } = customConfig;
     const { buckets, multiBucketEvents, timeMin, timeMax }: CalculatedActiveView = getActiveView();
 
     const events: Event[] = await getEvents({
@@ -31,15 +74,17 @@ export const renderMenuBar = async (): Promise<MenuItem[]> => {
     return [
       ...renderIcon(iconActive),
       ...renderEventBuckets({ buckets, events, multiBucketEvents }),
-      renderViewsMenu(),
-      renderCalendarConfigMenu()
+      renderViewsMenu({ customConfig, defaultConfig }),
+      renderCalendarConfigMenu(customConfig)
     ];
   } catch (error) {
     return [
       ...renderIcon(iconInactive),
-      { text: 'Could Not Fetch Agenda' },
+      ...renderError(error),
+      renderViewsMenu({ customConfig, defaultConfig }),
+      renderCalendarConfigMenu(customConfig),
       bitbar.separator,
-      { text: 'Debug', submenu: [{ text: error.stack }] }
-    ];
+      renderDebugMenu(error)
+    ]
   }
 };
