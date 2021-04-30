@@ -17,7 +17,7 @@ Fully configurable/customizable display. Select from default views or create you
 * On the sidebar under **APIs & Services**, select **Library**
 * Search for the **Google Calendar API** and **Enable** it
 * On the sidebar under **APIs & Services**, select **OAuth consent screen**
-* Follow the prompts.
+* Follow the prompts
   * Choose the **External** user type
   * You will be asked to fill in some consent form information, but what you put here is not important. It is just what will show up when BitCal requests initial OAuth access to your calendars. Anything optional can safely be left blank.
 * On the sidebar under **APIs & Services**, select **Credentials**
