@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAuthClient = void 0;
+exports.getAuthClient = exports.login = void 0;
 const fs_1 = require("fs");
 const readline_1 = __importDefault(require("readline"));
 const googleapis_1 = require("googleapis");
@@ -26,11 +26,13 @@ const getToken = ({ oAuth2Client, code }) => __awaiter(void 0, void 0, void 0, f
     }
     catch (error) {
         console.error('Error retrieving access token');
-        error.category = 'access_token';
+        error.category = 'get_token';
         throw error;
     }
 });
-const getAccessToken = (oAuth2Client) => __awaiter(void 0, void 0, void 0, function* () {
+const getOAuth2Client = ({ clientSecret, clientId, redirectUri }) => new googleapis_1.google.auth.OAuth2(clientId, clientSecret, redirectUri);
+const getAccessToken = (credentials) => __awaiter(void 0, void 0, void 0, function* () {
+    const oAuth2Client = getOAuth2Client(credentials);
     const authUrl = oAuth2Client.generateAuthUrl({ access_type: 'offline', scope: SCOPES });
     console.log('Authorize this app by visiting this url:', authUrl);
     const rl = readline_1.default
@@ -44,20 +46,22 @@ const getAccessToken = (oAuth2Client) => __awaiter(void 0, void 0, void 0, funct
     console.log('Token stored to', TOKEN_PATH);
     return oAuth2Client;
 });
-const authorize = ({ clientSecret, clientId, redirectUri }) => __awaiter(void 0, void 0, void 0, function* () {
-    const oAuth2Client = new googleapis_1.google.auth
-        .OAuth2(clientId, clientSecret, redirectUri);
+const authorize = (credentials) => __awaiter(void 0, void 0, void 0, function* () {
+    const oAuth2Client = getOAuth2Client(credentials);
     try {
         oAuth2Client.setCredentials(JSON.parse((yield readFile(TOKEN_PATH)).toString()));
         return oAuth2Client;
     }
-    catch (_error) {
-        return getAccessToken(oAuth2Client);
+    catch (error) {
+        console.error('Error parsing token or setting credentials');
+        error.category = 'parse_token';
+        throw error;
     }
 });
-const parseCredentials = (path) => __awaiter(void 0, void 0, void 0, function* () {
+const parseCredentials = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return JSON.parse((yield readFile(path)).toString());
+        const { installed: { client_secret: clientSecret, client_id: clientId, redirect_uris: [redirectUri] } } = JSON.parse((yield readFile(CREDENTIALS_PATH)).toString());
+        return { clientSecret, clientId, redirectUri };
     }
     catch (error) {
         console.error('Error loading credentials');
@@ -65,12 +69,12 @@ const parseCredentials = (path) => __awaiter(void 0, void 0, void 0, function* (
         throw error;
     }
 });
+const login = () => __awaiter(void 0, void 0, void 0, function* () {
+    return (getAccessToken(yield parseCredentials()));
+});
+exports.login = login;
 const getAuthClient = () => __awaiter(void 0, void 0, void 0, function* () {
-    const { installed: { client_secret: clientSecret, client_id: clientId, redirect_uris: [redirectUri] } } = yield parseCredentials(CREDENTIALS_PATH);
-    return authorize({ clientSecret, clientId, redirectUri });
+    return (authorize(yield parseCredentials()));
 });
 exports.getAuthClient = getAuthClient;
-if (require.main === module) {
-    exports.getAuthClient();
-}
 //# sourceMappingURL=auth.js.map

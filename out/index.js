@@ -15,11 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bitbarCalendar = void 0;
 const bitbar_1 = __importDefault(require("bitbar"));
 const configHelpers_1 = require("./configHelpers");
+const auth_1 = require("./auth");
 const menuBar_1 = require("./menuBar");
 const optparse = {
     'select-view': configHelpers_1.selectView,
     'toggle-calendar': configHelpers_1.toggleCalendar,
-    'refresh-calendars': configHelpers_1.refreshCalendars
+    'refresh-calendars': configHelpers_1.refreshCalendars,
+    'login': auth_1.login
 };
 const isValidOpt = (opt) => opt in optparse;
 const bitbarCalendar = () => __awaiter(void 0, void 0, void 0, function* () {

@@ -24,12 +24,21 @@ const defaultConfig = require('../defaultConfig.json');
 const iconActive = require('../iconActive.json');
 const iconInactive = require('../iconInactive.json');
 const CREDENTIAL_LINK = ('https://github.com/ruxpendp/bitcal#get-google-calendar-credentials');
+const LOGIN_LINK = 'https://github.com/ruxpendp/bitcal#login';
 const ERROR_ROWS = {
     credentials: [
         { text: 'Unable to load credentials' },
         { text: 'Get Credentials', href: CREDENTIAL_LINK }
     ],
-    access_token: [{ text: 'Error retrieving access token' }],
+    get_token: [{ text: 'Error retrieving access token' }],
+    parse_token: [{
+            text: 'Login',
+            href: LOGIN_LINK
+            // bash: process.argv[0],
+            // param1: process.argv[1],
+            // param2: 'login',
+            // terminal: true
+        }],
     default: [{ text: 'Unable to retrieve events' }]
 };
 const renderError = (error) => [
