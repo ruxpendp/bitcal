@@ -8,7 +8,7 @@ const SCOPES: string[] = ['https://www.googleapis.com/auth/calendar.readonly'];
 const CREDENTIALS_PATH: string = `${__dirname}/../credentials.json`;
 const TOKEN_PATH: string = `${__dirname}/../token.json`;
 
-interface GetTokenArgs {
+interface GetToken {
   oAuth2Client: Auth.OAuth2Client;
   code: string;
 }
@@ -28,17 +28,22 @@ interface Credentials {
 }
 
 
-const getToken = async ({ oAuth2Client, code }: GetTokenArgs): Promise<Auth.Credentials> => {
+const getToken = async ({ oAuth2Client, code }: GetToken): Promise<Auth.Credentials> => {
   try {
     return (await oAuth2Client.getToken(code)).tokens;
   } catch (error) {
     console.error('Error retrieving access token');
-    error.category = 'access_token';
+    error.category = 'get_token';
     throw error;
   }
 };
 
-const getAccessToken = async (oAuth2Client: Auth.OAuth2Client): Promise<Auth.OAuth2Client> => {
+const getOAuth2Client = (
+  { clientSecret, clientId, redirectUri }: Credentials
+): Auth.OAuth2Client => new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+
+const getAccessToken = async (credentials: Credentials): Promise<Auth.OAuth2Client> => {
+  const oAuth2Client: Auth.OAuth2Client = getOAuth2Client(credentials);
   const authUrl: string = oAuth2Client.generateAuthUrl({ access_type: 'offline', scope: SCOPES });
   console.log('Authorize this app by visiting this url:', authUrl);
 
@@ -58,22 +63,28 @@ const getAccessToken = async (oAuth2Client: Auth.OAuth2Client): Promise<Auth.OAu
   return oAuth2Client;
 };
 
-const authorize = async (
-  { clientSecret, clientId, redirectUri }: Credentials
-): Promise<Auth.OAuth2Client> => {
-  const oAuth2Client: Auth.OAuth2Client = new google.auth
-    .OAuth2(clientId, clientSecret, redirectUri);
+const authorize = async (credentials: Credentials): Promise<Auth.OAuth2Client> => {
+  const oAuth2Client: Auth.OAuth2Client = getOAuth2Client(credentials);
   try {
     oAuth2Client.setCredentials(JSON.parse((await readFile(TOKEN_PATH)).toString()));
     return oAuth2Client;
-  } catch (_error) {
-    return getAccessToken(oAuth2Client);
+  } catch (error) {
+    console.error('Error parsing token or setting credentials');
+    error.category = 'parse_token';
+    throw error;
   }
 };
 
-const parseCredentials = async (path: string): Promise<ParsedCredentials> => {
+const parseCredentials = async (): Promise<Credentials> => {
   try {
-    return JSON.parse((await readFile(path)).toString());
+    const {
+      installed: {
+        client_secret: clientSecret,
+        client_id: clientId,
+        redirect_uris: [redirectUri]
+      }
+    }: ParsedCredentials = JSON.parse((await readFile(CREDENTIALS_PATH)).toString());
+    return { clientSecret, clientId, redirectUri };
   } catch (error) {
     console.error('Error loading credentials');
     error.category = 'credentials';
@@ -81,17 +92,10 @@ const parseCredentials = async (path: string): Promise<ParsedCredentials> => {
   }
 };
 
-export const getAuthClient = async (): Promise<Auth.OAuth2Client> => {
-  const {
-    installed: {
-      client_secret: clientSecret,
-      client_id: clientId,
-      redirect_uris: [redirectUri]
-    }
-  }: ParsedCredentials = await parseCredentials(CREDENTIALS_PATH);
-  return authorize({ clientSecret, clientId, redirectUri });
-};
+export const login = async (): Promise<Auth.OAuth2Client> => (
+  getAccessToken(await parseCredentials())
+);
 
-if (require.main === module) {
-  getAuthClient();
-}
+export const getAuthClient = async (): Promise<Auth.OAuth2Client> => (
+  authorize(await parseCredentials())
+);
