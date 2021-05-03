@@ -25,12 +25,22 @@ const CREDENTIAL_LINK: string = (
   'https://github.com/ruxpendp/bitcal#get-google-calendar-credentials'
 );
 
+const LOGIN_LINK: string = 'https://github.com/ruxpendp/bitcal#login';
+
 const ERROR_ROWS: { [category: string]: BitbarOptions[] } = {
   credentials: [
     { text: 'Unable to load credentials' },
     { text: 'Get Credentials', href: CREDENTIAL_LINK }
   ],
-  access_token: [{ text: 'Error retrieving access token' }],
+  get_token: [{ text: 'Error retrieving access token' }],
+  parse_token: [{
+    text: 'Login',
+    href: LOGIN_LINK
+    // bash: process.argv[0],
+    // param1: process.argv[1],
+    // param2: 'login',
+    // terminal: true
+  }],
   default: [{ text: 'Unable to retrieve events' }]
 };
 
