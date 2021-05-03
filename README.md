@@ -27,7 +27,7 @@ Fully configurable/customizable display. Select from default views or create you
 * Rename this file to `credentials.json` and drop it in your BitCal repository
 
 ### Login
-* `cd path/to/repository` then `node .`
+* `cd path/to/repository` then `node . login`
 * Follow the prompts (follow the url to the OAuth consent screen and paste the code back in your console)
 
 ### Running in xbar
