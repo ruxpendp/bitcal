@@ -38,7 +38,8 @@ Fully configurable/customizable display. Select from default views or create you
 _Documentation coming soon! In the meantime check out `defaultConfig.json` to see what is possible. You can create your own `views`, `eventBuckets`, `timeStamps`, and `offsets` in `config.json`._
 
 ## Future Plans
-* Config to indicate which calendar an event comes from
-* Color coded calendars/events?
+* Indicate which calendar an event belongs to (color and/or label)
+* Invite status (accepted/invited/declined/maybe)
+* Hide or strikethrough declined events
 * Test coverage
 * An actual native macOS app with UI for customizing views!
