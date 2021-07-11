@@ -49,6 +49,9 @@ interface EventRenderData {
 
 
 const DEFAULT_FORMAT: string = 'h:mm A';
+const DEFAULT_SUMMARY: string = '(no summary)';
+const DEFAULT_START_TIME: string = '(no start time)';
+const DEFAULT_END_TIME: string = '(no end time)';
 
 const { primaryCalendar }: CustomConfig = config;
 
@@ -71,17 +74,18 @@ const humanize = ({ timeStamp, delta, format }: HumanDelta): string => {
 const formatEvent = (
   { summary, start, end, htmlLink, eventFormat, now }: EventFormatData
 ): FormattedEvent => {
+  const cleanSummary: string = summary ? summary.replace(/\|/g, '-') : DEFAULT_SUMMARY;
   const format = eventFormat || DEFAULT_FORMAT;
   const startDelta: number = Math.round(
     moment.duration(moment(start).seconds(0).diff(moment(now).seconds(0))).asMinutes()
   );
-  const shortText: string = humanize({ timeStamp: start, delta: startDelta, format });
-  const startText: string = start ? start.format(format) : 'no start time';
-  const endText: string = end ? end.format(format): 'no end time';
+  const shortTime: string = humanize({ timeStamp: start, delta: startDelta, format });
+  const startTime: string = start ? start.format(format) : DEFAULT_START_TIME;
+  const endTime: string = end ? end.format(format) : DEFAULT_END_TIME;
 
   return {
-    defaultText: `${shortText}  –  ${summary}`,
-    alternateText: `${startText} - ${endText}  –  ${summary}`,
+    defaultText: `${shortTime}  –  ${cleanSummary}`,
+    alternateText: `${startTime} - ${endTime}  –  ${cleanSummary}`,
     href: htmlLink ? formatUrl(htmlLink) : ''
   }
 };

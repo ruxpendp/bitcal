@@ -8,6 +8,9 @@ const moment_1 = __importDefault(require("moment"));
 const bitbar_1 = __importDefault(require("bitbar"));
 const config = require('../config.json');
 const DEFAULT_FORMAT = 'h:mm A';
+const DEFAULT_SUMMARY = '(no summary)';
+const DEFAULT_START_TIME = '(no start time)';
+const DEFAULT_END_TIME = '(no end time)';
 const { primaryCalendar } = config;
 const formatUrl = (htmlLink) => {
     const url = new URL(htmlLink);
@@ -28,14 +31,15 @@ const humanize = ({ timeStamp, delta, format }) => {
     return 'now';
 };
 const formatEvent = ({ summary, start, end, htmlLink, eventFormat, now }) => {
+    const cleanSummary = summary ? summary.replace(/\|/g, '-') : DEFAULT_SUMMARY;
     const format = eventFormat || DEFAULT_FORMAT;
     const startDelta = Math.round(moment_1.default.duration(moment_1.default(start).seconds(0).diff(moment_1.default(now).seconds(0))).asMinutes());
-    const shortText = humanize({ timeStamp: start, delta: startDelta, format });
-    const startText = start ? start.format(format) : 'no start time';
-    const endText = end ? end.format(format) : 'no end time';
+    const shortTime = humanize({ timeStamp: start, delta: startDelta, format });
+    const startTime = start ? start.format(format) : DEFAULT_START_TIME;
+    const endTime = end ? end.format(format) : DEFAULT_END_TIME;
     return {
-        defaultText: `${shortText}  –  ${summary}`,
-        alternateText: `${startText} - ${endText}  –  ${summary}`,
+        defaultText: `${shortTime}  –  ${cleanSummary}`,
+        alternateText: `${startTime} - ${endTime}  –  ${cleanSummary}`,
         href: htmlLink ? formatUrl(htmlLink) : ''
     };
 };
